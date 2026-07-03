@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Historial Mundialista · Camino a la Copa 2026</title>
+<meta name="description" content="Datos, momentos históricos y videos de las grandes selecciones en los Mundiales de fútbol.">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -558,7 +565,50 @@
     color:var(--pitch-deep);
     font-weight:700;
   }
+
+  @media (max-width:600px){
+    .app{ padding:20px 12px 44px; }
+    .panel, .scorers-panel{ padding:18px 14px 22px; }
+    .stats{ grid-template-columns:repeat(2,1fr); gap:10px; }
+    .stat .value{ font-size:16px; }
+    .team-header{ gap:14px; }
+    .badge{ width:80px; height:53px; }
+    .tab{ font-size:12px; padding:7px 9px; }
+    .scorer-row{ padding:8px 6px; gap:8px; }
+    .scorer-row .sname{ font-size:13px; }
+    .highlight-card, .review-card{ padding:10px 11px; }
+  }
 </style>
+</head>
+<body style="margin:0;background:#08090A;">
+<script>
+if(!window.storage){
+  window.storage = {
+    async get(key){
+      const v = localStorage.getItem("hm:"+key);
+      if(v===null) throw new Error("Key not found");
+      return { key, value: v, shared:false };
+    },
+    async set(key, value){
+      localStorage.setItem("hm:"+key, value);
+      return { key, value, shared:false };
+    },
+    async delete(key){
+      localStorage.removeItem("hm:"+key);
+      return { key, deleted:true, shared:false };
+    },
+    async list(prefix){
+      const keys = [];
+      for(let i=0;i<localStorage.length;i++){
+        const k = localStorage.key(i);
+        if(k.startsWith("hm:"+(prefix||""))) keys.push(k.slice(3));
+      }
+      return { keys, shared:false };
+    }
+  };
+}
+</script>
+
 
 <div class="app" id="app">
   <p class="eyebrow">Cuadro de selecciones</p>
@@ -1117,3 +1167,6 @@
   renderPanel();
 })();
 </script>
+
+</body>
+</html>
