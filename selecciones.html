@@ -1,0 +1,1119 @@
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pitch:#0E2F22;
+    --pitch-deep:#091F16;
+    --panel:#123A2A;
+    --chalk:#F3EFE3;
+    --chalk-dim:#B9C9BE;
+    --gold:#D4AF37;
+    --gold-dim:#9c8228;
+    --line:#2F6B4F;
+    --red:#B23A3A;
+  }
+  *{box-sizing:border-box;}
+  .app{
+    background:
+      radial-gradient(1100px 480px at 50% -12%, rgba(212,175,55,0.20), transparent 62%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 64px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.022) 0px, rgba(255,255,255,0.022) 1px, transparent 1px, transparent 64px),
+      linear-gradient(165deg, #08090A 0%, #0B1F17 42%, #0E2F22 100%);
+    color:var(--chalk);
+    font-family:'Inter',sans-serif;
+    min-height:100%;
+    padding:28px 20px 60px;
+  }
+  .modular-bar{
+    height:7px;
+    border-radius:2px;
+    margin:2px 0 16px;
+    background:repeating-linear-gradient(90deg, var(--gold) 0 13px, transparent 13px 19px);
+    opacity:.5;
+  }
+  .host-strip{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin:0 0 22px;
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--chalk-dim);
+  }
+  .host-strip .chip{
+    width:9px;height:9px;
+    border-radius:2px;
+    flex:none;
+  }
+  .scorers-panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:24px 24px 26px;
+    margin-top:26px;
+  }
+  .scorers-panel h2{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:26px;
+    letter-spacing:.02em;
+    margin:0 0 2px;
+  }
+  .scorers-note{
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    color:var(--chalk-dim);
+    margin:0 0 16px;
+  }
+  .scorer-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:9px 12px;
+    border-bottom:1px dashed var(--line);
+  }
+  .scorer-row:last-child{ border-bottom:none; }
+  .scorer-row .pos{
+    font-family:'Space Mono',monospace;
+    font-weight:700;
+    font-size:13px;
+    color:var(--gold);
+    width:26px;
+    flex:none;
+  }
+  .scorer-row .sname{
+    font-weight:600;
+    font-size:14px;
+    flex:1;
+  }
+  .scorer-row .sname .country{
+    font-weight:400;
+    font-size:12px;
+    color:var(--chalk-dim);
+  }
+  .scorer-row .goals{
+    font-family:'Space Mono',monospace;
+    font-weight:700;
+    font-size:16px;
+    color:var(--gold);
+    flex:none;
+  }
+  .scorer-row.active-player .sname::after{
+    content:" ● en activo";
+    font-size:10px;
+    color:#5FB878;
+    font-family:'Space Mono',monospace;
+  }
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin:0 0 6px;
+  }
+  h1.title{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(34px,6vw,56px);
+    letter-spacing:.03em;
+    margin:0 0 22px;
+    line-height:.95;
+    color:var(--chalk);
+  }
+
+  /* Tabs styled like a substitution board */
+  .tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    background:var(--pitch-deep);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:8px;
+    margin-bottom:26px;
+  }
+  .tab{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:transparent;
+    border:1px solid transparent;
+    color:var(--chalk-dim);
+    font-family:'Space Mono',monospace;
+    font-size:13px;
+    letter-spacing:.05em;
+    padding:8px 12px;
+    border-radius:7px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .tab:hover{ background:rgba(255,255,255,0.05); color:var(--chalk); }
+  .tab.active{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:var(--pitch-deep);
+    font-weight:700;
+  }
+  .tab .dot{
+    width:26px;height:17px;
+    border-radius:2px;
+    flex:none;
+    display:block;
+    overflow:hidden;
+    box-shadow:0 0 0 1px rgba(0,0,0,.35);
+  }
+
+  /* Header */
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:26px 24px 30px;
+  }
+  .team-header{
+    display:flex;
+    align-items:center;
+    gap:20px;
+  }
+  .badge{
+    width:100px;height:66px;
+    flex:none;
+    border-radius:5px;
+    overflow:hidden;
+    box-shadow:0 0 0 2px var(--pitch-deep), 0 0 0 3px var(--line), 0 4px 10px rgba(0,0,0,.35);
+  }
+  .team-name{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(28px,4vw,40px);
+    letter-spacing:.02em;
+    line-height:1;
+    margin:0 0 6px;
+  }
+  .team-meta{
+    font-family:'Space Mono',monospace;
+    font-size:12.5px;
+    color:var(--chalk-dim);
+    letter-spacing:.03em;
+  }
+  .team-meta b{ color:var(--gold); font-weight:700; }
+
+  /* Halfway line divider - signature element */
+  .halfway{
+    position:relative;
+    height:34px;
+    margin:26px 0;
+    border-top:1px dashed var(--line);
+  }
+  .halfway::after{
+    content:"";
+    position:absolute;
+    top:-17px; left:50%; transform:translateX(-50%);
+    width:34px;height:34px;border-radius:50%;
+    border:1px dashed var(--line);
+    background:var(--panel);
+  }
+
+  /* Stats grid */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:14px;
+  }
+  .stat{
+    background:var(--pitch-deep);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 14px 12px;
+  }
+  .stat .label{
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--chalk-dim);
+    margin-bottom:6px;
+  }
+  .stat .value{
+    font-family:'Space Mono',monospace;
+    font-size:19px;
+    font-weight:700;
+    color:var(--gold);
+    line-height:1.25;
+  }
+  .stat .sub{
+    font-size:11.5px;
+    color:var(--chalk-dim);
+    margin-top:3px;
+    font-family:'Inter',sans-serif;
+  }
+
+  .legends{
+    margin-top:18px;
+    font-size:13px;
+    color:var(--chalk-dim);
+  }
+  .legends b{ color:var(--chalk); }
+
+  /* Highlights section */
+  .section-title{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:24px;
+    letter-spacing:.02em;
+    margin:32px 0 4px;
+  }
+  .section-sub{
+    font-family:'Space Mono',monospace;
+    font-size:11.5px;
+    color:var(--chalk-dim);
+    margin-bottom:14px;
+  }
+  .highlight-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .highlight-card{
+    background:var(--pitch-deep);
+    border:1px solid var(--line);
+    border-left:3px solid var(--gold);
+    border-radius:8px;
+    padding:12px 14px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .highlight-card .date{
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    color:var(--gold);
+    letter-spacing:.05em;
+    margin-bottom:3px;
+  }
+  .highlight-card .htitle{
+    font-weight:700;
+    font-size:14.5px;
+    margin-bottom:3px;
+  }
+  .highlight-card .desc{
+    font-size:13px;
+    color:var(--chalk-dim);
+    line-height:1.4;
+  }
+  .del-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--chalk-dim);
+    border-radius:6px;
+    width:26px;height:26px;
+    flex:none;
+    cursor:pointer;
+    font-size:14px;
+    line-height:1;
+  }
+  .del-btn:hover{ border-color:var(--red); color:var(--red); }
+
+  .empty{
+    font-size:13px;
+    color:var(--chalk-dim);
+    font-style:italic;
+    padding:10px 2px;
+  }
+
+  .add-form{
+    margin-top:14px;
+    background:var(--pitch-deep);
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:14px;
+  }
+  .add-toggle{
+    font-family:'Space Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:.04em;
+    background:transparent;
+    border:1px solid var(--gold);
+    color:var(--gold);
+    padding:9px 14px;
+    border-radius:7px;
+    cursor:pointer;
+    margin-top:14px;
+  }
+  .add-toggle:hover{ background:var(--gold); color:var(--pitch-deep); }
+
+  .field{ margin-bottom:10px; }
+  .field label{
+    display:block;
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--chalk-dim);
+    margin-bottom:5px;
+  }
+  .field input, .field textarea{
+    width:100%;
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--chalk);
+    border-radius:6px;
+    padding:9px 10px;
+    font-family:'Inter',sans-serif;
+    font-size:13.5px;
+  }
+  .field textarea{ resize:vertical; min-height:56px; }
+  .field input:focus, .field textarea:focus{
+    outline:2px solid var(--gold);
+    outline-offset:1px;
+  }
+  .form-actions{
+    display:flex;
+    gap:10px;
+    margin-top:4px;
+  }
+  .btn-save{
+    background:var(--gold);
+    border:1px solid var(--gold);
+    color:var(--pitch-deep);
+    font-weight:700;
+    font-size:13px;
+    padding:9px 16px;
+    border-radius:7px;
+    cursor:pointer;
+  }
+  .btn-cancel{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--chalk-dim);
+    font-size:13px;
+    padding:9px 16px;
+    border-radius:7px;
+    cursor:pointer;
+  }
+  .status{
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    color:var(--chalk-dim);
+    margin-top:8px;
+    min-height:14px;
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .tab, .del-btn, .add-toggle, .btn-save, .btn-cancel{ transition:all .15s ease; }
+  }
+  @media (max-width:520px){
+    .team-header{ flex-wrap:wrap; }
+  }
+
+  /* Reseñas / comentarios */
+  .review-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .review-card{
+    background:var(--pitch-deep);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 14px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .review-card .rtop{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:4px;
+  }
+  .review-card .rname{
+    font-weight:700;
+    font-size:13.5px;
+  }
+  .review-card .rdate{
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    color:var(--chalk-dim);
+  }
+  .stars{
+    font-size:13px;
+    letter-spacing:1px;
+    color:var(--gold);
+  }
+  .stars .empty-star{ color:var(--line); }
+  .review-card .rtext{
+    font-size:13px;
+    color:var(--chalk-dim);
+    line-height:1.4;
+  }
+  .star-input{
+    display:flex;
+    gap:4px;
+  }
+  .star-btn{
+    background:transparent;
+    border:none;
+    font-size:22px;
+    line-height:1;
+    color:var(--line);
+    cursor:pointer;
+    padding:2px;
+  }
+  .star-btn.on{ color:var(--gold); }
+  .share-note{
+    font-size:11.5px;
+    color:var(--chalk-dim);
+    font-style:italic;
+    margin-top:6px;
+  }
+
+  /* Fotos y videos */
+  .media-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+  .media-card{
+    background:var(--pitch-deep);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    position:relative;
+  }
+  .media-card .media-frame{
+    width:100%;
+    aspect-ratio:16/9;
+    background:#05130D;
+    display:block;
+  }
+  .media-card img.media-frame{ object-fit:cover; }
+  .yt-thumb{
+    position:relative;
+    padding:0;
+    border:none;
+    cursor:pointer;
+    display:block;
+  }
+  .yt-thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .yt-thumb .play-badge{
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:64px;height:64px;
+    border-radius:50%;
+    background:rgba(9,31,22,.78);
+    border:1px solid var(--gold);
+    color:var(--gold);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    padding-left:4px;
+  }
+  .yt-thumb:hover .play-badge{ background:var(--gold); color:var(--pitch-deep); }
+  .media-card .media-cap{
+    font-size:13px;
+    color:var(--chalk-dim);
+    padding:10px 12px;
+  }
+  .media-card .del-btn{
+    position:absolute;
+    top:7px; right:7px;
+    background:rgba(9,31,22,.85);
+    border-color:var(--line);
+  }
+  .media-card.text-card{
+    padding:14px 14px 12px;
+  }
+  .media-card.text-card .media-note{
+    font-size:13px;
+    line-height:1.45;
+    color:var(--chalk);
+    white-space:pre-wrap;
+  }
+  .media-card.text-card .media-cap{
+    padding:8px 0 0;
+  }
+  .type-toggle{
+    display:flex;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .type-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--chalk-dim);
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    padding:7px 14px;
+    border-radius:6px;
+    cursor:pointer;
+  }
+  .type-btn.on{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:var(--pitch-deep);
+    font-weight:700;
+  }
+</style>
+
+<div class="app" id="app">
+  <p class="eyebrow">Cuadro de selecciones</p>
+  <h1 class="title">Historial Mundialista</h1>
+  <div class="modular-bar"></div>
+  <div class="host-strip">
+    <span class="chip" style="background:#B22234"></span>
+    <span class="chip" style="background:#006847"></span>
+    <span class="chip" style="background:#FF0000"></span>
+    Camino a la Copa · Estados Unidos · México · Canadá 2026
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="panel" id="panel"></div>
+
+  <div class="scorers-panel">
+    <h2>Máximos goleadores en la historia de los Mundiales</h2>
+    <p class="scorers-note">Actualizado al 3 de julio de 2026 · Mundial 2026 en curso, las cifras de los jugadores en activo pueden seguir subiendo</p>
+    <div class="scorer-row active-player"><span class="pos">1</span><span class="sname">Lionel Messi <span class="country">· Argentina</span></span><span class="goals">19</span></div>
+    <div class="scorer-row active-player"><span class="pos">2</span><span class="sname">Kylian Mbappé <span class="country">· Francia</span></span><span class="goals">18</span></div>
+    <div class="scorer-row"><span class="pos">3</span><span class="sname">Miroslav Klose <span class="country">· Alemania</span></span><span class="goals">16</span></div>
+    <div class="scorer-row"><span class="pos">4</span><span class="sname">Ronaldo Nazário <span class="country">· Brasil</span></span><span class="goals">15</span></div>
+    <div class="scorer-row"><span class="pos">5</span><span class="sname">Gerd Müller <span class="country">· Alemania</span></span><span class="goals">14</span></div>
+    <div class="scorer-row"><span class="pos">6</span><span class="sname">Just Fontaine <span class="country">· Francia</span></span><span class="goals">13</span></div>
+    <div class="scorer-row active-player"><span class="pos">6</span><span class="sname">Harry Kane <span class="country">· Inglaterra</span></span><span class="goals">13</span></div>
+    <div class="scorer-row"><span class="pos">8</span><span class="sname">Pelé <span class="country">· Brasil</span></span><span class="goals">12</span></div>
+    <div class="scorer-row active-player"><span class="pos">9</span><span class="sname">Cristiano Ronaldo <span class="country">· Portugal</span></span><span class="goals">11</span></div>
+    <div class="scorer-row"><span class="pos">9</span><span class="sname">Sándor Kocsis <span class="country">· Hungría</span></span><span class="goals">11</span></div>
+    <div class="scorer-row"><span class="pos">9</span><span class="sname">Jürgen Klinsmann <span class="country">· Alemania</span></span><span class="goals">11</span></div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  const TEAMS = [
+    {
+      id:"esp", code:"ESP", name:"España", nickname:"La Roja",
+      confed:"UEFA", founded:1913,
+      titles:[2010], runnerUps:[],
+      appearances:16, bestResult:"Campeona (2010)",
+      topScorer:"David Villa (9)",
+      legends:["Iniesta","Xavi","Raúl","Villa"],
+      flag:["#C60B1E","#FFC400","#C60B1E"],
+      reviewSeed:{name:"Claude", rating:5, date:"Reseña inicial", text:"España conquistó su único Mundial en 2010 con un fútbol de posesión que marcó época. La historia mundialista de esta generación se resume en un solo gol de Iniesta, que alcanzó para levantar la copa."},
+      mediaSeed:[
+        {type:"video", url:"https://www.youtube.com/watch?v=3pCPQDxZzfY", caption:"Gol de Andrés Iniesta ante Países Bajos · Final del Mundial 2010 (FIFA)"}
+      ],
+      seed:[
+        {date:"11 jul 2010", title:"Final vs Países Bajos", desc:"Andrés Iniesta anotó en la prórroga y le dio a España su primer título mundial."},
+        {date:"16 jun 1950", title:"España 1-0 Inglaterra", desc:"Triunfo histórico en la fase de grupos del Mundial de Brasil, recordado como una sorpresa mayúscula."},
+        {date:"6 dic 2022", title:"Octavos vs Marruecos", desc:"Eliminación por penales ante el anfitrión africano en un partido muy reñido."}
+      ]
+    },
+    {
+      id:"fra", code:"FRA", name:"Francia", nickname:"Les Bleus",
+      confed:"UEFA", founded:1919,
+      titles:[1998,2018], runnerUps:[2006,2022],
+      appearances:15, bestResult:"Campeona (1998, 2018)",
+      topScorer:"Kylian Mbappé (18)",
+      legends:["Zidane","Platini","Henry","Mbappé"],
+      flag:["#0055A4","#FFFFFF","#EF4135"],
+      reviewSeed:{name:"Claude", rating:5, date:"Reseña actualizada · jul 2026", text:"Francia es una de las pocas selecciones con dos títulos en los últimos 25 años, y en el Mundial 2026 Mbappé alcanzó los 18 goles mundialistas, superando a Klose y quedando a un solo tanto del récord histórico de Messi con el torneo aún en juego."},
+      mediaSeed:[
+        {type:"video", url:"https://www.youtube.com/watch?v=WXECIq9V-o4", caption:""}
+      ],
+      seed:[
+        {date:"12 jul 1998", title:"Final vs Brasil", desc:"Doblete de cabeza de Zinedine Zidane para el primer título mundial francés, en casa."},
+        {date:"9 jul 2006", title:"Final vs Italia", desc:"El célebre cabezazo de Zidane a Materazzi antes de que Italia se impusiera por penales."},
+        {date:"18 dic 2022", title:"Final vs Argentina", desc:"Triplete de Kylian Mbappé no alcanzó para evitar la derrota por penales frente a Argentina."}
+      ]
+    },
+    {
+      id:"arg", code:"ARG", name:"Argentina", nickname:"La Albiceleste",
+      confed:"CONMEBOL", founded:1893,
+      titles:[1978,1986,2022], runnerUps:[1930,1990,2014],
+      appearances:18, bestResult:"Campeona (1978, 1986, 2022)",
+      topScorer:"Lionel Messi (19)",
+      legends:["Maradona","Messi","Kempes","Passarella"],
+      flag:["#74ACDF","#FFFFFF","#74ACDF"],
+      reviewSeed:{name:"Claude", rating:5, date:"Reseña actualizada · jul 2026", text:"La consagración en 2022 cerró el ciclo pendiente de Messi, y en el Mundial 2026 el capitán argentino superó a Klose para convertirse en el máximo goleador de la historia de los Mundiales con 19 tantos, disputando además su sexta Copa del Mundo, algo inédito."},
+      mediaSeed:[
+        {type:"video", url:"https://www.youtube.com/shorts/oPU3X3vUU-4", caption:"La 'Mano de Dios' y el 'Gol del Siglo' de Maradona vs Inglaterra, Mundial 1986"}
+      ],
+      seed:[
+        {date:"22 jun 1986", title:"Cuartos vs Inglaterra", desc:"Diego Maradona marcó 'La Mano de Dios' y minutos después el 'Gol del Siglo' en el mismo partido."},
+        {date:"18 dic 2022", title:"Final vs Francia", desc:"Argentina se coronó campeona tras un 3-3 y definición por penales, con doblete de Messi en tiempo regular."},
+        {date:"9 dic 2022", title:"Cuartos vs Países Bajos", desc:"Clasificación dramática por penales tras un partido cargado de tensión y un empate en el final."}
+      ]
+    },
+    {
+      id:"por", code:"POR", name:"Portugal", nickname:"A Seleção",
+      confed:"UEFA", founded:1914,
+      titles:[], runnerUps:[],
+      appearances:8, bestResult:"3er puesto (1966)",
+      topScorer:"Cristiano Ronaldo (11)",
+      legends:["Eusébio","Luís Figo","Cristiano Ronaldo"],
+      flag:["#046A38","#DA291C","#046A38"],
+      reviewSeed:{name:"Claude", rating:4, date:"Reseña inicial", text:"Portugal nunca ha ganado un Mundial, pero su tercer puesto en 1966 con Eusébio y su generación dorada de 2006 muestran que siempre ha estado entre los equipos capaces de competir con los mejores del mundo."},
+      mediaSeed:[
+        {type:"video", url:"https://www.youtube.com/watch?v=cx3B-9ZPN6s", caption:"Tiro libre de Cristiano Ronaldo vs España, Mundial 2018"}
+      ],
+      seed:[
+        {date:"26 jul 1966", title:"Semifinal vs Inglaterra", desc:"Eusébio terminó como máximo goleador del torneo mientras Portugal alcanzaba su mejor actuación histórica."},
+        {date:"1 jul 2006", title:"4to puesto en Alemania", desc:"Portugal llegó a semifinales apoyada en una generación liderada por Luís Figo y Cristiano Ronaldo."},
+        {date:"6 dic 2022", title:"Octavos vs Suiza", desc:"Goleada 6-1 con triplete de Gonçalo Ramos en su debut como titular en un Mundial."}
+      ]
+    },
+    {
+      id:"bra", code:"BRA", name:"Brasil", nickname:"A Canarinha",
+      confed:"CONMEBOL", founded:1914,
+      titles:[1958,1962,1970,1994,2002], runnerUps:[1950,1998],
+      appearances:22, bestResult:"Campeona (5 títulos)",
+      topScorer:"Ronaldo Nazário (15)",
+      legends:["Pelé","Ronaldo","Ronaldinho","Zico","Garrincha"],
+      flag:["#009739","#FEDD00","#002776"],
+      reviewSeed:{name:"Claude", rating:5, date:"Reseña inicial", text:"Brasil es la única selección presente en todos los Mundiales y la más ganadora, con cinco títulos. El equipo de 1970, con Pelé, Jairzinho y Tostão, sigue siendo una referencia obligada de fútbol ofensivo."},
+      mediaSeed:[
+        {type:"video", url:"https://www.youtube.com/watch?v=sCU-z1Ogc4Q", caption:"Resumen de la final del Mundial 2002 vs Alemania, con Ronaldo levantando el quinto título"}
+      ],
+      seed:[
+        {date:"21 jun 1970", title:"Final vs Italia", desc:"El equipo de Pelé, Jairzinho y Tostão es recordado como una de las mejores selecciones de la historia."},
+        {date:"16 jul 1950", title:"Final vs Uruguay (Maracanazo)", desc:"Brasil perdió la final en casa ante Uruguay, una de las mayores sorpresas en la historia del fútbol."},
+        {date:"8 jul 2014", title:"Semifinal vs Alemania", desc:"Derrota histórica por 7-1 en Belo Horizonte, conocida como el 'Mineirazo'."}
+      ]
+    },
+    {
+      id:"ale", code:"ALE", name:"Alemania", nickname:"Die Mannschaft",
+      confed:"UEFA", founded:1900,
+      titles:[1954,1974,1990,2014], runnerUps:[1966,1982,1986,2002],
+      appearances:20, bestResult:"Campeona (4 títulos)",
+      topScorer:"Miroslav Klose (16)",
+      legends:["Beckenbauer","Gerd Müller","Klose","Özil"],
+      flag:["#000000","#DD0000","#FFCE00"],
+      reviewSeed:{name:"Claude", rating:5, date:"Reseña inicial", text:"Alemania combina consistencia y títulos como pocas selecciones: cuatro copas y cuatro subcampeonatos hablan de una presencia casi constante en las instancias finales de los Mundiales."},
+      mediaSeed:[
+        {type:"video", url:"https://www.youtube.com/shorts/_krNMSWfCUY", caption:"Gol de Mario Götze en la final del Mundial 2014 vs Argentina"}
+      ],
+      seed:[
+        {date:"4 jul 1954", title:"Final vs Hungría ('Milagro de Berna')", desc:"Alemania Occidental remontó para ganar su primer título ante el favorito húngaro."},
+        {date:"8 jul 2014", title:"Semifinal vs Brasil", desc:"Goleada 7-1 en el país anfitrión, camino a un cuarto título mundial."},
+        {date:"13 jul 2014", title:"Final vs Argentina", desc:"Gol de Mario Götze en la prórroga para sellar el título en Brasil."}
+      ]
+    },
+    {
+      id:"eng", code:"ENG", name:"Inglaterra", nickname:"The Three Lions",
+      confed:"UEFA", founded:1863,
+      titles:[1966], runnerUps:[],
+      appearances:16, bestResult:"Campeona (1966)",
+      topScorer:"Harry Kane (13)",
+      legends:["Bobby Moore","Bobby Charlton","Gary Lineker","Wayne Rooney"],
+      flag:["#FFFFFF","#CE1124"],
+      reviewSeed:{name:"Claude", rating:4, date:"Reseña inicial", text:"Inglaterra ganó su único Mundial como anfitriona en 1966, con el hat-trick de Geoff Hurst en la final. Desde entonces ha tenido buenas generaciones (semifinales en 1990 y 2018) pero no ha vuelto a levantar el trofeo."},
+      mediaSeed:[
+        {type:"video", url:"https://www.youtube.com/watch?v=0Uhe_l1h3w8", caption:"El polémico tercer gol de Geoff Hurst ('gol fantasma') en la final del Mundial 1966 vs Alemania"}
+      ],
+      seed:[
+        {date:"30 jul 1966", title:"Final vs Alemania Occidental", desc:"Geoff Hurst anotó un triplete en la única final mundialista ganada por Inglaterra, jugada en Wembley."},
+        {date:"4 jul 1990", title:"Semifinal vs Alemania Occidental", desc:"Eliminación por penales tras un empate 1-1, en un partido que popularizó el término 'agonía de los penales'."},
+        {date:"11 jul 2018", title:"Semifinal vs Croacia", desc:"Inglaterra se adelantó temprano pero cayó en la prórroga, terminando cuarta en el Mundial de Rusia."}
+      ]
+    },
+    {
+      id:"ned", code:"NED", name:"Países Bajos", nickname:"Oranje",
+      confed:"UEFA", founded:1889,
+      titles:[], runnerUps:[1974,1978,2010],
+      appearances:11, bestResult:"Subcampeona (1974, 1978, 2010)",
+      topScorer:"Johnny Rep (7)",
+      legends:["Johan Cruyff","Marco van Basten","Dennis Bergkamp","Arjen Robben"],
+      flag:["#AE1C28","#FFFFFF","#21468B"],
+      reviewSeed:{name:"Claude", rating:4, date:"Reseña inicial", text:"Los Países Bajos nunca han ganado un Mundial pese a haber llegado a tres finales. El 'fútbol total' de Johan Cruyff en 1974 sigue siendo una de las propuestas de juego más influyentes en la historia del torneo, aunque no le alcanzó para el título."},
+      mediaSeed:[
+        {type:"video", url:"https://www.youtube.com/watch?v=qDLeH7PDVcc", caption:"Gol de cabeza de Robin van Persie vs España, Mundial 2014"}
+      ],
+      seed:[
+        {date:"7 jul 1974", title:"Final vs Alemania Occidental", desc:"El 'fútbol total' de Cruyff deslumbró en el torneo, pero Países Bajos cayó en la final ante el anfitrión."},
+        {date:"11 jul 2010", title:"Final vs España", desc:"Tercera final perdida por los neerlandeses, esta vez en la prórroga ante la España de Iniesta."},
+        {date:"9 jul 2014", title:"Semifinal vs Argentina", desc:"Eliminación por penales tras un 0-0, en un Mundial donde terminaron en tercer lugar."}
+      ]
+    }
+  ];
+
+  let active = TEAMS[0].id;
+  const tabsEl = document.getElementById("tabs");
+  const panelEl = document.getElementById("panel");
+  let mediaFormOpen = false;
+
+  // Bandera real de cada selección, dibujada en SVG (proporción 3:2).
+  function flagSVG(team){
+    const W = 150, H = 100;
+    let inner = "";
+
+    switch(team.id){
+      case "esp":
+        inner = `
+          <rect x="0" y="0" width="${W}" height="${H*0.25}" fill="#AA151B"/>
+          <rect x="0" y="${H*0.25}" width="${W}" height="${H*0.5}" fill="#F1BF00"/>
+          <rect x="0" y="${H*0.75}" width="${W}" height="${H*0.25}" fill="#AA151B"/>
+        `;
+        break;
+      case "fra":
+        inner = `
+          <rect x="0" y="0" width="${W/3}" height="${H}" fill="#0055A4"/>
+          <rect x="${W/3}" y="0" width="${W/3}" height="${H}" fill="#FFFFFF"/>
+          <rect x="${2*W/3}" y="0" width="${W/3}" height="${H}" fill="#EF4135"/>
+        `;
+        break;
+      case "arg": {
+        const rays = Array.from({length:16}).map((_,i)=>{
+          const ang = (i*360/16);
+          return `<rect x="74" y="34" width="2" height="9" fill="#F6B40E" transform="rotate(${ang} 75 50)"/>`;
+        }).join("");
+        inner = `
+          <rect x="0" y="0" width="${W}" height="${H/3}" fill="#75AADB"/>
+          <rect x="0" y="${H/3}" width="${W}" height="${H/3}" fill="#FFFFFF"/>
+          <rect x="0" y="${2*H/3}" width="${W}" height="${H/3}" fill="#75AADB"/>
+          <g>${rays}</g>
+          <circle cx="75" cy="50" r="10" fill="#F6B40E" stroke="#85340A" stroke-width="1"/>
+        `;
+        break;
+      }
+      case "por":
+        inner = `
+          <rect x="0" y="0" width="${W*0.4}" height="${H}" fill="#046A38"/>
+          <rect x="${W*0.4}" y="0" width="${W*0.6}" height="${H}" fill="#DA291C"/>
+          <circle cx="${W*0.4}" cy="${H/2}" r="15" fill="#FFCC00" stroke="#3B2E1E" stroke-width="1"/>
+          <rect x="${W*0.4-6}" y="${H/2-8}" width="12" height="16" rx="1.5" fill="#DA291C" stroke="#FFFFFF" stroke-width="1"/>
+        `;
+        break;
+      case "bra":
+        inner = `
+          <rect x="0" y="0" width="${W}" height="${H}" fill="#009739"/>
+          <polygon points="75,12 138,50 75,88 12,50" fill="#FEDD00"/>
+          <circle cx="75" cy="50" r="21" fill="#002776"/>
+          <path d="M56,44 A26,10 0 0 1 96,58" stroke="#FFFFFF" stroke-width="2.6" fill="none"/>
+        `;
+        break;
+      case "ale":
+        inner = `
+          <rect x="0" y="0" width="${W}" height="${H/3}" fill="#000000"/>
+          <rect x="0" y="${H/3}" width="${W}" height="${H/3}" fill="#DD0000"/>
+          <rect x="0" y="${2*H/3}" width="${W}" height="${H/3}" fill="#FFCE00"/>
+        `;
+        break;
+      case "eng":
+        inner = `
+          <rect x="0" y="0" width="${W}" height="${H}" fill="#FFFFFF"/>
+          <rect x="0" y="${H/2-9}" width="${W}" height="18" fill="#CE1124"/>
+          <rect x="${W/2-9}" y="0" width="18" height="${H}" fill="#CE1124"/>
+        `;
+        break;
+      case "ned":
+        inner = `
+          <rect x="0" y="0" width="${W}" height="${H/3}" fill="#AE1C28"/>
+          <rect x="0" y="${H/3}" width="${W}" height="${H/3}" fill="#FFFFFF"/>
+          <rect x="0" y="${2*H/3}" width="${W}" height="${H/3}" fill="#21468B"/>
+        `;
+        break;
+      default:
+        inner = `<rect x="0" y="0" width="${W}" height="${H}" fill="${team.flag[0]}"/>`;
+    }
+
+    return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">${inner}</svg>`;
+  }
+
+  function renderTabs(){
+    tabsEl.innerHTML = TEAMS.map(t => `
+      <button class="tab ${t.id===active?'active':''}" data-id="${t.id}">
+        <span class="dot">${flagSVG(t)}</span>
+        ${t.name}
+      </button>
+    `).join("");
+    tabsEl.querySelectorAll(".tab").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        active = btn.dataset.id;
+        mediaFormOpen = false;
+        renderTabs();
+        renderPanel();
+      });
+    });
+  }
+
+  async function getHighlights(team){
+    try{
+      const res = await window.storage.get(`highlights:${team.id}`, false);
+      if(res && res.value) return JSON.parse(res.value);
+    }catch(e){ /* not found yet, fall through to seed */ }
+    try{
+      await window.storage.set(`highlights:${team.id}`, JSON.stringify(team.seed), false);
+    }catch(e){ console.error("No se pudo guardar la semilla", e); }
+    return team.seed;
+  }
+
+  async function saveHighlights(teamId, list){
+    try{
+      const result = await window.storage.set(`highlights:${teamId}`, JSON.stringify(list), false);
+      return !!result;
+    }catch(e){
+      console.error("Error al guardar", e);
+      return false;
+    }
+  }
+
+  async function getReviews(team){
+    try{
+      const res = await window.storage.get(`reviews:${team.id}`, true);
+      if(res && res.value) return JSON.parse(res.value);
+    }catch(e){ /* aún no hay reseñas guardadas */ }
+    const seeded = [team.reviewSeed];
+    try{
+      await window.storage.set(`reviews:${team.id}`, JSON.stringify(seeded), true);
+    }catch(e){ console.error("No se pudo guardar la reseña inicial", e); }
+    return seeded;
+  }
+
+  function starDisplay(n){
+    let out = "";
+    for(let i=1;i<=5;i++){
+      out += i<=n ? "★" : `<span class="empty-star">★</span>`;
+    }
+    return out;
+  }
+
+  async function getMedia(team){
+    try{
+      const res = await window.storage.get(`media:${team.id}`, false);
+      if(res && res.value) return JSON.parse(res.value);
+    }catch(e){ /* aún no hay medios guardados */ }
+    const seeded = team.mediaSeed ? team.mediaSeed.slice() : [];
+    if(seeded.length){
+      try{
+        await window.storage.set(`media:${team.id}`, JSON.stringify(seeded), false);
+      }catch(e){ console.error("No se pudo guardar la semilla de medios", e); }
+    }
+    return seeded;
+  }
+
+  async function saveMedia(teamId, list){
+    try{
+      const result = await window.storage.set(`media:${teamId}`, JSON.stringify(list), false);
+      return !!result;
+    }catch(e){
+      console.error("Error al guardar el medio", e);
+      return false;
+    }
+  }
+
+  function youtubeId(url){
+    try{
+      const yt = url.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtube\.com\/shorts\/)([\w-]+)/);
+      if(yt) return yt[1];
+    }catch(e){ /* no es un link de YouTube */ }
+    return null;
+  }
+
+  function toEmbedUrl(url){
+    const id = youtubeId(url);
+    return id ? `https://www.youtube.com/embed/${id}?autoplay=1&vq=480p` : null;
+  }
+
+  function mediaCard(item, i){
+    if(item.type === "texto"){
+      return `
+        <div class="media-card text-card">
+          <button class="del-btn" data-i="${i}" title="Eliminar" aria-label="Eliminar">✕</button>
+          <div class="media-note">${item.text}</div>
+          ${item.caption ? `<div class="media-cap">${item.caption}</div>` : ""}
+        </div>
+      `;
+    }
+    const ytId = item.type === "video" ? youtubeId(item.url) : null;
+    let frame;
+    if(item.type === "foto"){
+      frame = `<img class="media-frame" src="${item.url}" alt="${item.caption || 'Foto'}" loading="lazy">`;
+    } else if(ytId){
+      frame = `
+        <button type="button" class="media-frame yt-thumb" data-embed="${toEmbedUrl(item.url)}" aria-label="Reproducir video">
+          <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="${item.caption || 'Miniatura del video'}" loading="lazy">
+          <span class="play-badge">▶</span>
+        </button>
+      `;
+    } else {
+      frame = `<video class="media-frame" src="${item.url}" controls preload="metadata"></video>`;
+    }
+    return `
+      <div class="media-card">
+        <button class="del-btn" data-i="${i}" title="Eliminar" aria-label="Eliminar">✕</button>
+        ${frame}
+        ${item.caption ? `<div class="media-cap">${item.caption}</div>` : ""}
+      </div>
+    `;
+  }
+
+  function statBlock(label, value, sub){
+    return `<div class="stat">
+      <div class="label">${label}</div>
+      <div class="value">${value}</div>
+      ${sub? `<div class="sub">${sub}</div>` : ""}
+    </div>`;
+  }
+
+  async function renderPanel(){
+    const team = TEAMS.find(t=>t.id===active);
+    panelEl.innerHTML = `<div class="status">Cargando partidos guardados…</div>`;
+    const highlights = await getHighlights(team);
+    const reviews = await getReviews(team);
+    const media = await getMedia(team);
+
+    const titlesStr = team.titles.length
+      ? `${team.titles.length} · ${team.titles.join(", ")}`
+      : "0";
+    const runnerStr = team.runnerUps.length
+      ? `${team.runnerUps.length} · ${team.runnerUps.join(", ")}`
+      : "0";
+
+    panelEl.innerHTML = `
+      <div class="team-header">
+        <div class="badge">${flagSVG(team)}</div>
+        <div>
+          <h2 class="team-name">${team.name}</h2>
+          <div class="team-meta"><b>"${team.nickname}"</b> · ${team.confed} · fundada en ${team.founded}</div>
+        </div>
+      </div>
+
+      <div class="halfway"></div>
+
+      <div class="stats">
+        ${statBlock("Mundiales ganados", titlesStr)}
+        ${statBlock("Subcampeonatos", runnerStr)}
+        ${statBlock("Participaciones", team.appearances)}
+        ${statBlock("Mejor resultado", team.bestResult)}
+        ${statBlock("Goleador en Mundiales", team.topScorer)}
+        ${statBlock("Confederación", team.confed)}
+      </div>
+
+      <div class="legends"><b>Leyendas:</b> ${team.legends.join(" · ")}</div>
+
+      <p class="section-title">Partidos y jugadas destacadas</p>
+      <p class="section-sub">Momentos históricos de ${team.name}</p>
+      <div class="highlight-list" id="hlist"></div>
+
+      <p class="section-title">Reseñas de la afición</p>
+      <p class="section-sub">Análisis de Claude sobre ${team.name}</p>
+      <div class="review-list" id="rlist"></div>
+
+      <p class="section-title">Video destacado</p>
+      <p class="section-sub">Un solo video por selección</p>
+      <div class="media-grid" id="mgrid"></div>
+      <div id="mediaFormWrap"></div>
+    `;
+
+    const listEl = document.getElementById("hlist");
+    listEl.innerHTML = highlights.map((h)=>`
+      <div class="highlight-card">
+        <div>
+          <div class="date">${h.date}</div>
+          <div class="htitle">${h.title}</div>
+          <div class="desc">${h.desc}</div>
+        </div>
+      </div>
+    `).join("");
+
+    const rlistEl = document.getElementById("rlist");
+    rlistEl.innerHTML = reviews.map((r)=>`
+      <div class="review-card">
+        <div>
+          <div class="rtop">
+            <span class="rname">${r.name}</span>
+            <span class="stars">${starDisplay(r.rating)}</span>
+            <span class="rdate">${r.date}</span>
+          </div>
+          <div class="rtext">${r.text}</div>
+        </div>
+      </div>
+    `).join("");
+
+    const mgridEl = document.getElementById("mgrid");
+    if(media.length===0){
+      mgridEl.innerHTML = `<div class="empty">Todavía no hay un video para ${team.name}.</div>`;
+    } else {
+      mgridEl.innerHTML = media.map((m,i)=>mediaCard(m,i)).join("");
+      mgridEl.querySelectorAll(".yt-thumb").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const iframe = document.createElement("iframe");
+          iframe.className = "media-frame";
+          iframe.src = btn.dataset.embed;
+          iframe.frameBorder = "0";
+          iframe.allow = "autoplay; encrypted-media";
+          iframe.allowFullscreen = true;
+          btn.replaceWith(iframe);
+        });
+      });
+      mgridEl.querySelectorAll(".del-btn").forEach(btn=>{
+        btn.addEventListener("click", async ()=>{
+          const updated = [];
+          await saveMedia(team.id, updated);
+          renderPanel();
+        });
+      });
+    }
+
+    const mediaFormWrap = document.getElementById("mediaFormWrap");
+    if(media.length===0){
+      mediaFormWrap.innerHTML = `
+        <button class="add-toggle" id="mediaToggle">${mediaFormOpen? "Cancelar" : "+ Añadir video"}</button>
+        <div id="mediaFormInner"></div>
+      `;
+      document.getElementById("mediaToggle").addEventListener("click", ()=>{
+        mediaFormOpen = !mediaFormOpen;
+        renderPanel();
+      });
+      if(mediaFormOpen){
+        const inner = document.getElementById("mediaFormInner");
+        inner.innerHTML = `
+          <div class="add-form">
+            <div class="field">
+              <label>URL del video (YouTube o enlace directo .mp4)</label>
+              <input type="text" id="m-url" placeholder="https://...">
+            </div>
+            <div class="field">
+              <label>Descripción (opcional)</label>
+              <input type="text" id="m-cap" placeholder="ej. Festejo en la final">
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" id="m-save">Guardar</button>
+              <button class="btn-cancel" id="m-cancel">Cancelar</button>
+            </div>
+            <div class="status" id="m-status"></div>
+          </div>
+        `;
+        document.getElementById("m-cancel").addEventListener("click", ()=>{
+          mediaFormOpen = false;
+          renderPanel();
+        });
+        document.getElementById("m-save").addEventListener("click", async ()=>{
+          const url = document.getElementById("m-url").value.trim();
+          const caption = document.getElementById("m-cap").value.trim();
+          const statusEl = document.getElementById("m-status");
+          if(!url){
+            statusEl.textContent = "Pega un enlace antes de guardar.";
+            return;
+          }
+          statusEl.textContent = "Guardando…";
+          const ok = await saveMedia(team.id, [{ type:"video", url, caption }]);
+          if(ok){
+            mediaFormOpen = false;
+            renderPanel();
+          } else {
+            statusEl.textContent = "No se pudo guardar. Intenta de nuevo.";
+          }
+        });
+      }
+    }
+  }
+
+  renderTabs();
+  renderPanel();
+})();
+</script>
